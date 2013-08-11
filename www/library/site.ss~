@@ -1,0 +1,199 @@
+; Scheme Technical Bibliography Web Site (source)
+
+(require (lib "xml.ss" "webit"))
+(require (lib "html.ss" "webit"))
+(require (lib "sbib.ss" "webit"))
+(require (lib "site.ss" "webit-ext"))
+
+(require (lib "siql.ss" "siql"))
+
+(require "sections.ss")
+(require "structure.ss")
+
+(require (lib "browse-author.ss" "readscheme"))
+
+(require (lib "siteml-proc.ss" "readscheme"))
+(require (lib "biblio-templates.ss" "readscheme"))
+
+(start-repository '(scheme_biblio.sbib))
+
+(define scheme-nav-bar-items (list (list (site:&short-title? classics)
+                                         (site:&nav-label? page1)
+                                         "./imgs/nav_classics.gif"
+                                         "./imgs/focus_nav_classics.gif"
+                                         "30")
+                                   (list (site:&short-title? semantics)
+                                         (site:&nav-label? page2)
+                                         "./imgs/nav_sem.gif"
+                                         "./imgs/focus_nav_sem.gif"
+                                         "18")
+                                   (list (site:&short-title? macros)
+                                         (site:&nav-label? page3)
+                                         "./imgs/nav_macros.gif"
+                                         "./imgs/focus_nav_macros.gif"
+                                         "18")
+                                   (list (site:&short-title? objects)
+                                         (site:&nav-label? page4)
+                                         "./imgs/nav_objects.gif"
+                                         "./imgs/focus_nav_objects.gif"
+                                         "18")
+                                   (list (site:&short-title? modules)
+                                         (site:&nav-label? page5)
+                                         "./imgs/nav_modules.gif"
+                                         "./imgs/focus_nav_modules.gif"
+                                         "30")
+                                   (list (site:&short-title? cps)
+                                         (site:&nav-label? page6)
+                                         "./imgs/nav_cps.gif"
+                                         "./imgs/focus_nav_cps.gif"
+                                         "18")
+                                   (list (site:&short-title? xml-web)
+                                         (site:&nav-label? pageXML)
+                                         "./imgs/nav_xml.gif"
+                                         "./imgs/focus_nav_xml.gif"
+                                         "30")
+                                   (list (site:&short-title? applications)
+                                         (site:&nav-label? page7)
+                                         "./imgs/nav_appl.gif"
+                                         "./imgs/focus_nav_appl.gif"
+                                         "18")
+                                   (list (site:&short-title? implementation)
+                                         (site:&nav-label? page8)
+                                         "./imgs/nav_impl.gif"
+                                         "./imgs/focus_nav_impl.gif"
+                                         "18")
+                                   (list (site:&short-title? concurrent)
+                                         (site:&nav-label? page9)
+                                         "./imgs/nav_conc.gif"
+                                         "./imgs/focus_nav_conc.gif"
+                                         "30")
+                                   (list (site:&short-title? partial)
+                                         (site:&nav-label? page10)
+                                         "./imgs/nav_pe.gif"
+                                         "./imgs/focus_nav_pe.gif"
+                                         "30")
+                                   (list (site:&short-title? reflection)
+                                         (site:&nav-label? page11)
+                                         "./imgs/nav_reflect.gif"
+                                         "./imgs/focus_nav_reflect.gif"
+                                         "18")
+                                   (list (site:&short-title? recent-adds-section)
+                                         (site:&nav-label? recent-adds-page)
+                                         "./imgs/nav_recent.gif"
+                                         "./imgs/focus_nav_recent.gif"
+                                         "30")
+                                   (list "Browse by Author"
+                                         "index_browse"
+                                         "./imgs/nav_browse.gif"
+                                         "./imgs/focus_nav_browse.gif"
+                                         "30"
+                                         "./browse.html")
+                                   (list "Search..."
+                                         "index_search"
+                                         "./imgs/nav_search.gif"
+                                         "./imgs/focus_nav_search.gif"
+                                         "18")))
+
+(define (scheme-nav-table items)
+  (lambda (focus-key)
+    (h4:table
+     h4:width: "124"
+     (h4:tr
+      h4:width: "124"
+      h4:height: "45"
+      (h4:td h4:width: "124"
+             h4:height: "45"
+             (h4:a h4:href: "http://readscheme.org"
+                   (h4:img h4:width: "124"
+                           h4:height: "45"
+                           h4:border: "0"
+                           h4:alt: "Readscheme.org"
+                           h4:src: "./imgs/nav-logo.gif"))))
+     (let* ((title (site:&short-title? main-page-toc))
+            (file "./imgs/nav_mainlogo.gif")
+            (img-hgt "124")
+            (binding (assoc title (section->url-list)))
+            (img-ref (h4:img h4:width: "124"
+                             h4:height: img-hgt
+                             h4:border: "0"
+                             h4:alt: "Scheme Bibliography Home"
+                             h4:src: file)))
+       (if (and title binding)
+           (h4:tr
+            h4:width: "124"
+            h4:height: img-hgt
+            (h4:td h4:width: "124"
+                   h4:height: img-hgt
+                   (if (cadddr binding)
+                       (h4:a h4:href: (string-append (car (cadr binding))
+                                                     (cadr (cadr binding)))
+                             h4:target: (cadddr binding)
+                             img-ref)
+                       (h4:a h4:href: (string-append (car (cadr binding))
+                                                     (cadr (cadr binding)))
+                             img-ref))))
+           (error "improper navigation-bar entry:" title)))
+     (map (lambda (item)
+            (let* ((title (car item))
+                   (in-focus (cadr item))
+                   (file (caddr item))
+                   (focus-file (cadddr item))
+                   (img-hgt (cadr (cdddr item)))
+                   (binding (assoc title (section->url-list)))
+                   (this-url (if (null? (cddr (cdddr item)))
+                                 #f
+                                 (car (cddr (cdddr item)))))
+                   (img-ref (h4:img h4:width: "124"
+                                    h4:height: img-hgt
+                                    h4:border: "0"
+                                    h4:alt: title
+                                    h4:src: (if (string=? focus-key in-focus)
+                                                focus-file
+                                                file))))
+              (if (and title (or binding this-url))
+                  (h4:tr
+                   h4:width: "124"
+                   h4:height: img-hgt
+                   (h4:td h4:width: "124"
+                          h4:height: img-hgt
+                          (if this-url
+                              (h4:a h4:href: this-url
+                                    img-ref)
+                              (if (cadddr binding)
+                                  (h4:a h4:href: (string-append (car (cadr binding))
+                                                                (cadr (cadr binding)))
+                                        h4:target: (cadddr binding)
+                                        img-ref)
+                                  (h4:a h4:href: (string-append (car (cadr binding))
+                                                                (cadr (cadr binding)))
+                                        img-ref)))))
+                  (error "improper navigation-bar entry:" title))))
+          items))))
+
+(define intro-template (biblio-template empty-nav-table default-style-ref))
+
+(define scheme-biblio-template 
+  (biblio-template (scheme-nav-table scheme-nav-bar-items) default-style-ref))
+
+(define (maker url)
+  (with-output-to-file "basic.css"
+    (lambda ()
+      (write-xml default-style-external))
+    'replace)
+  (process-site-structure (sitef url)
+                          `(("front" ,intro-template)
+                            ("biblio" ,scheme-biblio-template))
+                          `())
+  (with-output-to-file "browse.html"
+    (lambda ()
+      (write-xml
+       (apply-page-template scheme-biblio-template
+                            (make-browse-page
+                             'scheme_biblio.sbib
+                             "http://library.readscheme.org/servlets/search.ss?pattern="
+                             "Scheme"))))
+    'replace))
+
+(define (makelocal)
+  (maker "./"))
+

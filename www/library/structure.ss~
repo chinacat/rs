@@ -1,0 +1,397 @@
+; Scheme Technical Bibliography Web Site (source)
+
+#cs
+(module structure mzscheme
+  
+  (require (lib "html.ss" "webit"))
+  (require (lib "site.ss" "webit-ext"))
+  
+  (require "sections.ss")
+  
+  (define site-title "Bibliography of Scheme-related Research")
+  
+  (define introduction-text
+    (list (h4:p "This online bibliography collects together links to technical papers "
+                "and theses related to the Scheme language, including both classic "
+                "papers and recent research.")
+          (h4:p "This site is maintained by Jim Bender. "
+                "Please send suggestions for additions to this site to "
+                (h4:a h4:href: "mailto:editor@readscheme.org" "editor@readscheme.org")
+                ".")))
+  
+  (define (construct-front-whats-new-text base-url)
+    (list (site:description
+           (h4:form h4:action: (string-append base-url "servlets/search.ss")
+                    h4:method: "get"
+                    "Search the Scheme bibliography: "
+                    (h4:input h4:type: "text" 
+                              h4:name: "kwd"
+                              h4:value: "")
+                    (h4:input h4:type: "submit"
+                              h4:name: "en"
+                              h4:value: "Enter")))
+          
+          (h4:p (h4:a h4:href: (string-append base-url
+                                              "whats_new.html")
+                      "New citations" )
+                (string-append " added on " last-adds-date "!"))
+          
+          (h4:p "Visit the other bibliography sites at "
+                (h4:a h4:href: "http://www.readscheme.org"
+                      "Readscheme.org:"))
+          (h4:dl 
+           (h4:dd (h4:strong "NEW! ")
+                  (h4:a h4:href: "http://partial-eval.org"
+                        (h4:em "\"Online Bibliography of Partial Evaluation Research\"")))
+           (h4:dd (h4:a h4:href: "http://haskell.readscheme.org"
+                        (h4:em "\"Online Bibliography of Haskell Research\"")))
+           (h4:dd (h4:a h4:href: "http://readscheme.org/modules/"
+                        (h4:em "\"Mini-Bibliography on Modules Systems "
+                               "for Functional Programming Languages\"")))
+           (h4:dd (h4:a h4:href: "http://readscheme.org/xml-web/"
+                        (h4:em "\"Reading list on XML and Web Programming in "
+                               "Functional Programming Languages\""))))
+          
+          
+          ))
+  
+  (define (abstract-toc-entry section)
+    (site:toc-entry site:title: (site:&title? section)
+                    site:short-title: (site:&short-title? section)
+                    site:target-name: (site:&target-name? section)))
+  
+  (define main-page-toc (site:logical-structure site:title: "Home"
+                                                site:short-title: "Home"
+                                                site:target-name: "home"
+                                                (abstract-toc-entry classics)
+                                                (abstract-toc-entry semantics)
+                                                (abstract-toc-entry macros)
+                                                (abstract-toc-entry objects)
+                                                (abstract-toc-entry modules)
+                                                (abstract-toc-entry cps)
+                                                (abstract-toc-entry xml-web)
+                                                (abstract-toc-entry applications)
+                                                (abstract-toc-entry implementation)
+                                                (abstract-toc-entry concurrent)
+                                                (abstract-toc-entry partial)
+                                                (abstract-toc-entry reflection)))
+  
+  (define (construct-main-page base-url)
+    (site:page site:title: site-title
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "front"
+               site:nav-label: "index_readscheme"
+               (site:description (h4:h1 site-title)
+                                 introduction-text)
+               (site:section site:title: "What's new..."
+                             (site:description (construct-front-whats-new-text base-url)))
+               (site:section site:title: "Table of Contents"
+                             main-page-toc
+                             (site:description
+                              (h4:ul
+                               (h4:li (h4:a h4:href: (string-append base-url "browse.html")
+                                            "Browse by Author")))))
+               (site:section site:title: "Past Scheme Workshops"
+                             site:short-title: "Scheme Workshops"
+                             site:target-name: "sw-index"
+                             (site:description
+                              (h4:ul
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2000.html")
+                                            (site:&title? sw2000-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2001.html")
+                                            (site:&title? sw2001-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2002.html")
+                                            (site:&title? sw2002-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2003.html")
+                                            (site:&title? sw2003-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2004.html")
+                                            (site:&title? sw2004-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2005.html")
+                                            (site:&title? sw2005-page))))))
+               ))
+  
+  (define (search-page base-url)
+    (let ((result-url (string-append base-url "servlets/search.ss")))
+      (site:page site:title: "Search..."
+                 site:description: "Online bibliography of Scheme research"
+                 site:keywords: "Scheme, bibliography, research"
+                 site:page-class: "biblio"
+                 site:nav-label: "index_search"
+                 (site:section site:title: "Search..."
+                               site:short-title: "Search..."
+                               site:target-name: "Search..."
+                               (site:description
+                                (h4:form h4:action: result-url
+                                         h4:method: "get"
+                                         "Search: "
+                                         (h4:input h4:type: "text" 
+                                                   h4:name: "kwd"
+                                                   h4:value: "")
+                                         (h4:input h4:type: "submit"
+                                                   h4:name: "en"
+                                                   h4:value: "Enter")))))))
+  
+  (define page1
+    (site:page site:title: (site:&title? classics)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Guy Steele, Rabbit"
+               site:page-class: "biblio"
+               site:nav-label: "index_page1"
+               classics))
+  
+  (define page2
+    (site:page site:title: (site:&title? semantics)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "biblio"
+               site:nav-label: "index_page2"
+               semantics))
+  
+  (define page3
+    (site:page site:title: (site:&title? macros)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, macros"
+               site:page-class: "biblio"
+               site:nav-label: "index_page3"
+               macros))
+  
+  (define page4
+    (site:page site:title: (site:&title? objects)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, object-oriented programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_page4"
+               objects))
+  
+  (define page5
+    (site:page site:title: (site:&title? modules)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, modules"
+               site:page-class: "biblio"
+               site:nav-label: "index_page5"
+               modules))
+  
+  (define page6
+    (site:page site:title: (site:&title? cps)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, continuation-passing style, CPS, continuations, call/cc"
+               site:page-class: "biblio"
+               site:nav-label: "index_page6"
+               cps))
+  
+  (define pageXML
+    (site:page site:title: (site:&title? xml-web)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, XML, web programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_pageXML"
+               xml-web))
+  
+  (define page7
+    (site:page site:title: (site:&title? applications)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, XML, web programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_page7"
+               applications))
+  
+  (define page8
+    (site:page site:title: (site:&title? implementation)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, implementation, compiler"
+               site:page-class: "biblio"
+               site:nav-label: "index_page8"
+               implementation))
+  
+  (define page9
+    (site:page site:title: (site:&title? concurrent)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "biblio"
+               site:nav-label: "index_page9"
+               concurrent))
+  
+  (define page10
+    (site:page site:title: (site:&title? partial)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, partial evaluation"
+               site:page-class: "biblio"
+               site:nav-label: "index_page10"
+               partial))
+  
+  (define page11
+    (site:page site:title: (site:&title? reflection)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, reflection"
+               site:page-class: "biblio"
+               site:nav-label: "index_page11"
+               reflection))
+  
+  (define recent-adds-page (site:page site:title: (site:&title? recent-adds-section)
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_whats_new"
+                                      recent-adds-section))
+  
+  (define recent-adds-2001 (site:page site:title: "Archived 2001 Additions"
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_2001_new"
+                                      2001-adds-section))
+  
+  (define recent-adds-2002 (site:page site:title: "Archived 2002 Additions"
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_2002_new"
+                                      2002-adds-section))
+  
+  (define sw2000-page
+    (site:page site:title: "Workshop on Scheme and Functional Programming 2000"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2000"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2000"
+               sw-2000-program))
+  
+  (define sw2001-page
+    (site:page site:title: "Second Workshop on Scheme and Functional Programming, 2001"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2001"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2001"
+               sw-2001-program))
+  
+  (define sw2002-page
+    (site:page site:title: "Third Workshop on Scheme and Functional Programming, 2002"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2002"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2002"
+               sw-2002-program))
+  
+  (define sw2003-page
+    (site:page site:title: "2003 Scheme Workshop"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2003"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2003"
+               sw-2003-program))
+  
+  (define sw2004-page
+    (site:page site:title: "2004 Scheme Workshop"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2004"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2004"
+               sw-2004-program))
+  
+  (define sw2005-page
+    (site:page site:title: "2005 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2005"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2005"
+               sw-2005-program))
+  
+  (define (sitef base-url-name)
+    (site:site-structure
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "index.html"
+                      site:target: "_top"
+                      (construct-main-page base-url-name))
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "search.html"
+                      site:target: "_top"
+                      (search-page base-url-name))
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "whats_new.html"
+                      site:target: "_top"
+                      recent-adds-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "new2001.html"
+                      site:target: "_top"
+                      recent-adds-2001)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "new2002.html"
+                      site:target: "_top"
+                      recent-adds-2002)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page1.html"
+                      site:target: "_top"
+                      page1)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page2.html"
+                      site:target: "_top"
+                      page2)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page3.html"
+                      site:target: "_top"
+                      page3)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page4.html"
+                      site:target: "_top"
+                      page4)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page5.html"
+                      site:target: "_top"
+                      page5)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page6.html"
+                      site:target: "_top"
+                      page6)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "pagexml.html"
+                      site:target: "_top"
+                      pageXML)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page7.html"
+                      site:target: "_top"
+                      page7)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page8.html"
+                      site:target: "_top"
+                      page8)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page9.html"
+                      site:target: "_top"
+                      page9)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page10.html"
+                      site:target: "_top"
+                      page10)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page11.html"
+                      site:target: "_top"
+                      page11)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2000.html"
+                      site:target: "_top"
+                      sw2000-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2001.html"
+                      site:target: "_top"
+                      sw2001-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2002.html"
+                      site:target: "_top"
+                      sw2002-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2003.html"
+                      site:target: "_top"
+                      sw2003-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2004.html"
+                      site:target: "_top"
+                      sw2004-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2005.html"
+                      site:target: "_top"
+                      sw2005-page)))
+  
+  (provide (all-defined))
+  
+  )

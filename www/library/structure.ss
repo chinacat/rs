@@ -1,0 +1,617 @@
+; Scheme Technical Bibliography Web Site (source)
+
+#cs
+(module structure mzscheme
+  
+  (require (lib "html.ss" "webit"))
+  (require (lib "site.ss" "webit-ext"))
+  
+  (require "sections.ss")
+  
+  (define site-title "Bibliography of Scheme-related Research")
+  
+  (define introduction-text
+    (list (h4:p "This online bibliography collects together links to technical papers "
+                "and theses related to the Scheme language, including both classic "
+                "papers and recent research. "
+                "This site is maintained by Jim Bender. "
+                "Please send suggestions for additions to this site to him at "
+                (h4:a h4:href: "mailto:readscheme@gmail.com" "readscheme@gmail.com")
+                ". ")
+          (h4:p "Readscheme.org is hosted by "
+                (h4:a h4:href: "http://concurrency.cc" "concurrency.cc") ".")))
+  
+  (define (construct-front-whats-new-text base-url)
+    (list ;(site:description
+     ; (h4:form h4:action: (string-append base-url "servlets/search.ss")
+     ;          h4:method: "get"
+     ;          "Search the Scheme bibliography: "
+     ;          (h4:input h4:type: "text" 
+     ;                    h4:name: "kwd"
+     ;                    h4:value: "")
+     ;          (h4:input h4:type: "submit"
+     ;                    h4:name: "en"
+     ;                    h4:value: "Enter")))
+     
+     (h4:p (h4:a h4:href: (string-append base-url
+                                         "whats_new.html")
+                 "New citations" )
+           (string-append " added on " last-adds-date "!"))
+     
+     ;(h4:p "Visit the other bibliography sites at "
+     ;      (h4:a h4:href: "http://www.readscheme.org"
+     ;            "Readscheme.org:"))
+     ;(h4:dl 
+     ; (h4:dd (h4:a h4:href: "http://readscheme.org/partial-eval/"
+     ;              (h4:em "\"Online Bibliography of Partial Evaluation Research\"")))
+     ; ;(h4:dd (h4:a h4:href: "http://haskell.readscheme.org"
+     ; ;             (h4:em "\"Online Bibliography of Haskell Research\"")))
+     ; (h4:dd (h4:a h4:href: "http://readscheme.org/modules/"
+     ;              (h4:em "\"Mini-Bibliography on Modules Systems "
+     ;                     "for Functional Programming Languages\"")))
+     ; (h4:dd (h4:a h4:href: "http://readscheme.org/xml-web/"
+     ;              (h4:em "\"Reading list on XML and Web Programming in "
+     ;                     "Functional Programming Languages\""))))
+     
+     
+     ))
+  
+  (define (abstract-toc-entry section)
+    (site:toc-entry site:title: (site:&title? section)
+                    site:short-title: (site:&short-title? section)
+                    site:target-name: (site:&target-name? section)))
+  
+  (define main-page-toc (site:logical-structure site:title: "Home"
+                                                site:short-title: "Home"
+                                                site:target-name: "home"
+                                                (abstract-toc-entry classics)
+                                                (abstract-toc-entry semantics)
+                                                (abstract-toc-entry macros)
+                                                (abstract-toc-entry objects)
+                                                (abstract-toc-entry modules)
+                                                (abstract-toc-entry cps)
+                                                (abstract-toc-entry xml-web)
+                                                (abstract-toc-entry applications)
+                                                (abstract-toc-entry implementation)
+                                                (abstract-toc-entry concurrent)
+                                                (abstract-toc-entry partial)
+                                                (abstract-toc-entry reflection)))
+  
+  (define (construct-main-page base-url)
+    (site:page site:title: site-title
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "front"
+               site:nav-label: "index_readscheme"
+               (site:description (h4:h1 site-title)
+                                 introduction-text)
+               (site:section site:title: "What's new..."
+                             (site:description (construct-front-whats-new-text base-url)))
+               (site:section site:title: "Table of Contents"
+                             main-page-toc
+                             ;(site:description
+                             ; (h4:ul
+                             ;  (h4:li (h4:a h4:href: (string-append base-url "browse.html")
+                             ;               "Browse by Author"))))
+                             (site:description
+                              (h4:ul
+                               (h4:li (h4:a h4:href: (string-append base-url "standards.html")
+                                           "Reports on the Scheme Language"))))
+                             )
+               (site:section site:title: "Workshops on Scheme and Functional Programming"
+                             site:short-title: "Scheme Workshops"
+                             site:target-name: "sw-index"
+                             (site:description
+                              (h4:ul
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2000.html")
+                                            (site:&title? sw2000-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2001.html")
+                                            (site:&title? sw2001-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2002.html")
+                                            (site:&title? sw2002-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2003.html")
+                                            (site:&title? sw2003-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2004.html")
+                                            (site:&title? sw2004-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2005.html")
+                                            (site:&title? sw2005-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2006.html")
+                                            (site:&title? sw2006-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2007.html")
+                                            (site:&title? sw2007-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2008.html")
+                                            (site:&title? sw2008-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2009.html")
+                                            (site:&title? sw2009-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2010.html")
+                                            (site:&title? sw2010-page)))
+                               (h4:li (h4:a h4:href: (string-append base-url "sw2011.html")
+                                            (site:&title? sw2011-page))))))
+               ))
+  
+  (define (search-page base-url)
+    (let ((result-url (string-append base-url "servlets/search.ss")))
+      (site:page site:title: "Search..."
+                 site:description: "Online bibliography of Scheme research"
+                 site:keywords: "Scheme, bibliography, research"
+                 site:page-class: "biblio"
+                 site:nav-label: "index_search"
+                 (site:section site:title: "Search..."
+                               site:short-title: "Search..."
+                               site:target-name: "Search..."
+                               (site:description
+                                (h4:form h4:action: result-url
+                                         h4:method: "get"
+                                         "Search: "
+                                         (h4:input h4:type: "text" 
+                                                   h4:name: "kwd"
+                                                   h4:value: "")
+                                         (h4:input h4:type: "submit"
+                                                   h4:name: "en"
+                                                   h4:value: "Enter")))))))
+  
+  (define scheme-reports-page
+    (site:page site:title: "Scheme Reports"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, standards"
+               site:page-class: "biblio"
+               site:nav-label: "index_standards"
+               (site:section site:title: "Scheme Reports"
+                               site:short-title: "Standards"
+                               site:target-name: "Standards"
+                               (site:description
+                                (h4:p "Gerald Jay Sussman and Guy Lewis Steele, Jr. "
+                                        "\"Scheme: An Interpreter for Extended Lambda Calculus\". "
+                                        "MIT AI Lab. AI Lab Memo AIM-349. December 1975.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-349.pdf"
+                                         "pdf (MIT)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-349.ps.gz"
+                                         "ps (MIT)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://cs.au.dk/~hosc/local/HOSC-11-4-pp405-439.pdf"
+                                         "pdf (journal reprint)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://cs.au.dk/~hosc/local/HOSC-11-4-pp399-404.pdf"
+                                         "Sussman and Steele introduction to the journal reprint"))))
+                               (site:description
+                                (h4:p "Gerald Jay Sussman and Guy Lewis Steele, Jr. "
+                                        "\"The Revised Report on Scheme, a dialect of Lisp\". "
+                                        "MIT AI Lab. AI Lab Memo AIM-452. January 1978.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-452.pdf"
+                                         "pdf (MIT)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-452.ps.gz"
+                                         "ps (MIT)"))))
+                               (site:description
+                                (h4:p "J. Rees and W. Clinger (eds.). "
+                                      "The Revised, Revised Report on Scheme, or an Uncommon Lisp. "
+                                      (h4:em "ACM SIGPLAN Notices")
+                                      "MIT AI Lab. AI Lab Memo AIM-848. June 1985.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-848.pdf"
+                                         "pdf (MIT)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-848.ps.gz"
+                                         "ps (MIT)"))))
+                               (site:description
+                                (h4:p "J. Rees and W. Clinger (eds.). "
+                                      "The Revised" (h4:sup "3") " Report on the Algorithmic Language Scheme. "
+                                      (h4:em "ACM SIGPLAN Notices")
+                                      ". Vol. 21, No. 12. December, 1986.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/AIM-848a.pdf"
+                                         "pdf (MIT)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/TR174.pdf"
+                                         "pdf (Indiana)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r3rs.ps.gz"
+                                         "ps"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://dl.acm.org/citation.cfm?id=15043"
+                                         "ACM Digital Library"))))
+                               (site:description
+                                (h4:p "W. Clinger and J. Rees (eds.). "
+                                      "The Revised" (h4:sup "4") " Report on the Algorithmic Language Scheme. "
+                                      (h4:em "ACM Lisp Pointers")
+                                      ". Vol. 4, No. 3. July, 1991.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r4rs.pdf"
+                                         "pdf"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r4rs.ps.gz"
+                                         "ps"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://dl.acm.org/citation.cfm?id=382133"
+                                         "ACM Digital Library"))))
+                               (site:description
+                                (h4:p "R. Kelsey, W. Clinger, J. Rees (eds.). "
+                                      "The Revised" (h4:sup "5") " Report on the Algorithmic Language Scheme. "
+                                      (h4:em "Higher-Order and Symbolic Computation")
+                                      ". Vol. 11, No. 1. August, 1998.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r5rs.pdf"
+                                         "pdf"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://cs.au.dk/~hosc/local/HOSC-11-1-pp7-105.pdf"
+                                         "pdf (journal version)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r5rs.ps.gz"
+                                         "ps"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://dl.acm.org/citation.cfm?id=290234"
+                                         "ACM Digital Library"))))
+                               (site:description
+                                (h4:p "Michael Sperber, R. Kent Dybvig, Matthew Flatt, Anton van Straaten (eds.). "
+                                      "The Revised" (h4:sup "6") " Report on the Algorithmic Language Scheme. "
+                                      (h4:em "Journal of Functional Programming")
+                                      ". Vol. 19 - Supplement S1. August, 2009.")
+                                (h4:ul
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r6rs.pdf"
+                                         "pdf (main report)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r6rs-lib.pdf"
+                                         "pdf (standard libraries)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r6rs-app.pdf"
+                                         "pdf (non-normative appendices)"))
+                                 (h4:li (h4:a
+                                         h4:href: "http://repository.readscheme.org/ftp/papers/scheme_reports/r6rs-rationale.pdf"
+                                         "pdf (rationale)")))))))
+  
+  (define page1
+    (site:page site:title: (site:&title? classics)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Guy Steele, Rabbit"
+               site:page-class: "biblio"
+               site:nav-label: "index_page1"
+               classics))
+  
+  (define page2
+    (site:page site:title: (site:&title? semantics)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "biblio"
+               site:nav-label: "index_page2"
+               semantics))
+  
+  (define page3
+    (site:page site:title: (site:&title? macros)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, macros"
+               site:page-class: "biblio"
+               site:nav-label: "index_page3"
+               macros))
+  
+  (define page4
+    (site:page site:title: (site:&title? objects)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, object-oriented programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_page4"
+               objects))
+  
+  (define page5
+    (site:page site:title: (site:&title? modules)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, modules"
+               site:page-class: "biblio"
+               site:nav-label: "index_page5"
+               modules))
+  
+  (define page6
+    (site:page site:title: (site:&title? cps)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, continuation-passing style, CPS, continuations, call/cc"
+               site:page-class: "biblio"
+               site:nav-label: "index_page6"
+               cps))
+  
+  (define pageXML
+    (site:page site:title: (site:&title? xml-web)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, XML, web programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_pageXML"
+               xml-web))
+  
+  (define page7
+    (site:page site:title: (site:&title? applications)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, XML, web programming"
+               site:page-class: "biblio"
+               site:nav-label: "index_page7"
+               applications))
+  
+  (define page8
+    (site:page site:title: (site:&title? implementation)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, implementation, compiler"
+               site:page-class: "biblio"
+               site:nav-label: "index_page8"
+               implementation))
+  
+  (define page9
+    (site:page site:title: (site:&title? concurrent)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research"
+               site:page-class: "biblio"
+               site:nav-label: "index_page9"
+               concurrent))
+  
+  (define page10
+    (site:page site:title: (site:&title? partial)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, partial evaluation"
+               site:page-class: "biblio"
+               site:nav-label: "index_page10"
+               partial))
+  
+  (define page11
+    (site:page site:title: (site:&title? reflection)
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, reflection"
+               site:page-class: "biblio"
+               site:nav-label: "index_page11"
+               reflection))
+  
+  (define recent-adds-page (site:page site:title: (site:&title? recent-adds-section)
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_whats_new"
+                                      recent-adds-section))
+  
+  (define recent-adds-2001 (site:page site:title: "Archived 2001 Additions"
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_2001_new"
+                                      2001-adds-section))
+  
+  (define recent-adds-2002 (site:page site:title: "Archived 2002 Additions"
+                                      site:description: "Online bibliography of Scheme research"
+                                      site:keywords: "Scheme, bibliography, research"
+                                      site:page-class: "biblio"
+                                      site:nav-label: "index_2002_new"
+                                      2002-adds-section))
+  
+  (define sw2000-page
+    (site:page site:title: "Workshop on Scheme and Functional Programming 2000"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2000"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2000"
+               sw-2000-program))
+  
+  (define sw2001-page
+    (site:page site:title: "Second Workshop on Scheme and Functional Programming, 2001"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2001"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2001"
+               sw-2001-program))
+  
+  (define sw2002-page
+    (site:page site:title: "Third Workshop on Scheme and Functional Programming, 2002"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2002"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2002"
+               sw-2002-program))
+  
+  (define sw2003-page
+    (site:page site:title: "2003 Scheme Workshop"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2003"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2003"
+               sw-2003-program))
+  
+  (define sw2004-page
+    (site:page site:title: "2004 Scheme Workshop"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2004"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2004"
+               sw-2004-program))
+  
+   (define sw2005-page
+    (site:page site:title: "2005 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2005"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2005"
+               sw-2005-program))
+  
+  (define sw2006-page
+    (site:page site:title: "2006 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2006"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2006"
+               sw-2006-program))
+  
+  (define sw2007-page
+    (site:page site:title: "2007 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2007"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2007"
+               sw-2007-program))
+  
+  (define sw2008-page
+    (site:page site:title: "2008 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2008"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2008"
+               sw-2008-program))
+  
+  (define sw2009-page
+    (site:page site:title: "2009 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2009"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2009"
+               sw-2009-program))
+  
+  (define sw2010-page
+    (site:page site:title: "2010 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2010"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2010"
+               sw-2010-program))
+  
+  (define sw2011-page
+    (site:page site:title: "2011 Workshop on Scheme and Functional Programming"
+               site:description: "Online bibliography of Scheme research"
+               site:keywords: "Scheme, bibliography, research, Scheme Workshop 2011"
+               site:page-class: "biblio"
+               site:nav-label: "index_sw2011"
+               sw-2011-program))
+  
+  (define (sitef base-url-name)
+    (site:site-structure
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "index.html"
+                      site:target: "_top"
+                      (construct-main-page base-url-name))
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "search.html"
+                      site:target: "_top"
+                      (search-page base-url-name))
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "whats_new.html"
+                      site:target: "_top"
+                      recent-adds-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "new2001.html"
+                      site:target: "_top"
+                      recent-adds-2001)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "new2002.html"
+                      site:target: "_top"
+                      recent-adds-2002)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page1.html"
+                      site:target: "_top"
+                      page1)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page2.html"
+                      site:target: "_top"
+                      page2)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page3.html"
+                      site:target: "_top"
+                      page3)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page4.html"
+                      site:target: "_top"
+                      page4)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page5.html"
+                      site:target: "_top"
+                      page5)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page6.html"
+                      site:target: "_top"
+                      page6)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "pagexml.html"
+                      site:target: "_top"
+                      pageXML)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page7.html"
+                      site:target: "_top"
+                      page7)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page8.html"
+                      site:target: "_top"
+                      page8)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page9.html"
+                      site:target: "_top"
+                      page9)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page10.html"
+                      site:target: "_top"
+                      page10)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "page11.html"
+                      site:target: "_top"
+                      page11)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2000.html"
+                      site:target: "_top"
+                      sw2000-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2001.html"
+                      site:target: "_top"
+                      sw2001-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2002.html"
+                      site:target: "_top"
+                      sw2002-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2003.html"
+                      site:target: "_top"
+                      sw2003-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2004.html"
+                      site:target: "_top"
+                      sw2004-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2005.html"
+                      site:target: "_top"
+                      sw2005-page)
+     
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "standards.html"
+                      site:target: "_top"
+                      scheme-reports-page)
+     
+     
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2006.html"
+                      site:target: "_top"
+                      sw2006-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2007.html"
+                      site:target: "_top"
+                      sw2007-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2007.html"
+                      site:target: "_top"
+                      sw2007-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2008.html"
+                      site:target: "_top"
+                      sw2008-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2009.html"
+                      site:target: "_top"
+                      sw2009-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2010.html"
+                      site:target: "_top"
+                      sw2010-page)
+     (site:page-entry site:url: base-url-name
+                      site:file-name: "sw2011.html"
+                      site:target: "_top"
+                      sw2011-page)))
+  
+  (provide (all-defined))
+  
+  )
